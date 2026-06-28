@@ -1,23 +1,6 @@
-# Stage 1: Build frontend assets
-FROM node:22-alpine AS node-builder
+FROM php:8.4-fpm-alpine
 
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
-
-COPY resources/ resources/
-COPY public/ public/
-COPY vite.config.ts tsconfig.json components.json ./
-COPY routes/ routes/
-COPY app/Http/Controllers/ app/Http/Controllers/
-
-RUN npm run build
-
-# Stage 2: Production PHP image
-FROM php:8.3-fpm-alpine AS app
-
-# Install system dependencies and PHP extensions
+# Install system dependencies, PHP extensions, and Node.js/NPM
 RUN apk add --no-cache \
         nginx \
         supervisor \
@@ -30,6 +13,8 @@ RUN apk add --no-cache \
         libxml2-dev \
         zip \
         unzip \
+        nodejs \
+        npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install \
         pdo \
@@ -46,15 +31,16 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy composer files and install PHP dependencies (production only)
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-
 # Copy application source
 COPY . .
 
-# Copy built frontend assets from node-builder stage
-COPY --from=node-builder /app/public/build public/build
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Install Node dependencies and build assets
+RUN npm ci --ignore-scripts \
+    && npm run build \
+    && rm -rf node_modules
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
