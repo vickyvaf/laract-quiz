@@ -25,26 +25,27 @@ export function AppSidebar() {
             href: dashboardUrl,
             icon: LayoutGrid,
         },
-        ...(user.role === 'admin' ? [
-            {
-                title: 'Manage Quizzes',
-                href: '/admin/quizzes',
-                icon: FolderGit2,
-            },
-            {
-                title: 'Activity Log',
-                href: '/admin/activity-logs',
-                icon: ClipboardList,
-            }
-        ] : [
-            {
-                title: 'Available Quizzes',
-                href: '/student/quizzes',
-                icon: BookOpen,
-            }
-        ])
+        ...(user.role === 'admin'
+            ? [
+                  {
+                      title: 'Manage Quizzes',
+                      href: '/admin/quizzes',
+                      icon: FolderGit2,
+                  },
+                  {
+                      title: 'Activity Log',
+                      href: '/admin/activity-logs',
+                      icon: ClipboardList,
+                  },
+              ]
+            : [
+                  {
+                      title: 'Available Quizzes',
+                      href: '/student/quizzes',
+                      icon: BookOpen,
+                  },
+              ]),
     ];
-
 
     return (
         <Sidebar collapsible="icon" variant="inset">
