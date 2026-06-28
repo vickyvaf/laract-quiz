@@ -34,13 +34,25 @@ WORKDIR /var/www/html
 # Copy application source
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+# Ensure bootstrap/cache exists and is writable
+RUN mkdir -p bootstrap/cache \
+    && chmod -R 777 bootstrap/cache
+
+# Set up environment file and key for Laravel boot compatibility during asset compilation
+RUN cp .env.example .env \
+    && php artisan key:generate
+
+# Install all PHP dependencies (including dev dependencies) for build tasks
+RUN composer install --optimize-autoloader --no-interaction --no-scripts
 
 # Install Node dependencies and build assets
 RUN npm ci --ignore-scripts \
-    && npm run build \
-    && rm -rf node_modules
+    && npm run build
+
+# Clean up dev PHP dependencies and node_modules for production
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
+    && rm -rf node_modules \
+    && rm -f .env
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
