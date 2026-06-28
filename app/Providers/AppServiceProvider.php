@@ -2,9 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Services\ActivityLogger;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -26,19 +32,30 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
 
         // Register Auth event listeners
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Auth\Events\Login::class,
-            fn (\Illuminate\Auth\Events\Login $event) => \App\Services\ActivityLogger::log('login', "User '{$event->user->email}' logged in successfully.")
+        Event::listen(
+            Login::class,
+            function (Login $event): void {
+                /** @var User $user */
+                $user = $event->user;
+                ActivityLogger::log('login', "User '{$user->email}' logged in successfully.");
+            }
         );
 
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Auth\Events\Logout::class,
-            fn (\Illuminate\Auth\Events\Logout $event) => \App\Services\ActivityLogger::log('logout', $event->user ? "User '{$event->user->email}' logged out." : 'User logged out.')
+        Event::listen(
+            Logout::class,
+            function (Logout $event): void {
+                $email = $event->user instanceof User ? $event->user->email : 'Unknown';
+                ActivityLogger::log('logout', "User '{$email}' logged out.");
+            }
         );
 
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Auth\Events\Registered::class,
-            fn (\Illuminate\Auth\Events\Registered $event) => \App\Services\ActivityLogger::log('register', "New user registered: '{$event->user->email}'.")
+        Event::listen(
+            Registered::class,
+            function (Registered $event): void {
+                /** @var User $user */
+                $user = $event->user;
+                ActivityLogger::log('register', "New user registered: '{$user->email}'.");
+            }
         );
     }
 

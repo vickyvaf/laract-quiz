@@ -1,11 +1,6 @@
 <?php
 
-use App\Models\TeamInvitation;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::call(function () {
-    TeamInvitation::query()
-        ->whereNotNull('expires_at')
-        ->where('expires_at', '<', now())
-        ->delete();
-})->daily()->description('Delete expired team invitations');
+// ponytail: no scheduled tasks needed yet — TeamInvitation was removed as it's not part of this project
+Schedule::command('queue:prune-failed')->daily();
