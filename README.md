@@ -2,6 +2,11 @@
 
 Laract Quiz is an interactive online quiz application built using **Laravel 13**, **React 19**, **Inertia.js v3**, and **Tailwind CSS v4**. This application supports two main user roles: **Admin** (to manage quizzes and the question bank) and **Student** (to attempt quizzes with an active countdown timer).
 
+## Preview
+
+https://github.com/user-attachments/assets/e3cf10a5-d2b5-4900-a450-864c52fe1530
+
+
 ---
 
 ## Key Features
