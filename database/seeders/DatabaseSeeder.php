@@ -19,14 +19,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Seed Users
-        User::factory()->create([
+        User::create([
             'name' => 'Administrator',
             'email' => 'admin@laract.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
 
-        User::factory()->create([
+        User::create([
             'name' => 'Peserta Student',
             'email' => 'student@laract.com',
             'password' => Hash::make('password'),
