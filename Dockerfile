@@ -34,9 +34,14 @@ WORKDIR /var/www/html
 # Copy application source
 COPY . .
 
-# Ensure bootstrap/cache exists and is writable
-RUN mkdir -p bootstrap/cache \
-    && chmod -R 777 bootstrap/cache
+# Ensure Laravel storage and bootstrap cache directories exist and are writable
+RUN mkdir -p \
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
 
 # Set up environment file and key for Laravel boot compatibility during asset compilation
 RUN cp .env.example .env \
