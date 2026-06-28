@@ -77,6 +77,62 @@ Open your browser and navigate to:
 
 ---
 
+## Running with Docker
+
+The application includes a production-ready Docker setup using a multi-stage build (Node.js builds frontend assets, PHP 8.3-FPM + Nginx serves the app).
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) >= 24
+- [Docker Compose](https://docs.docker.com/compose/) >= 2
+
+### Quick Start
+
+1. **Copy the environment file** and configure it:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Build and start the containers**:
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. **Run migrations and seed the database** (first run only):
+   ```bash
+   docker compose exec app php artisan key:generate
+   docker compose exec app php artisan migrate --force
+   docker compose exec app php artisan db:seed
+   ```
+
+4. **Open the app** at [http://localhost:8000](http://localhost:8000)
+
+### Useful Docker Commands
+
+| Command | Description |
+|---------|-------------|
+| `docker compose up -d --build` | Build image and start containers |
+| `docker compose up -d` | Start containers (no rebuild) |
+| `docker compose down` | Stop and remove containers |
+| `docker compose down -v` | Stop containers and delete volumes (data loss!) |
+| `docker compose logs -f app` | Tail application logs |
+| `docker compose exec app php artisan <cmd>` | Run Artisan commands |
+
+### Environment Variables
+
+You can override the defaults via `.env` or shell environment:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `APP_PORT` | `8000` | Host port for the web server |
+| `DB_DATABASE` | `laract_quiz` | MySQL database name |
+| `DB_USERNAME` | `laract` | MySQL user |
+| `DB_PASSWORD` | `secret` | MySQL password |
+| `DB_ROOT_PASSWORD` | `root_secret` | MySQL root password |
+| `DB_EXPOSE_PORT` | `3307` | Host port to expose MySQL |
+
+---
+
 ## Demo Accounts (Seeder)
 
 Use the following credentials to test the application after running the database seeder (`php artisan db:seed`):
