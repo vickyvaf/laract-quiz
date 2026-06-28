@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Middleware\EnsureIsAdmin;
+use App\Http\Middleware\EnsureIsStudent;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Services\ActivityLogger;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,8 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
-            'student' => \App\Http\Middleware\EnsureIsStudent::class,
+            'admin' => EnsureIsAdmin::class,
+            'student' => EnsureIsStudent::class,
         ]);
 
         $middleware->web(append: [
@@ -29,14 +32,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->report(function (\Throwable $e) {
+        $exceptions->report(function (Throwable $e) {
             try {
-                \App\Services\ActivityLogger::log(
+                ActivityLogger::log(
                     'system_error',
-                    "Encountered " . get_class($e) . ": " . $e->getMessage() . " in " . basename($e->getFile()) . " L" . $e->getLine(),
+                    'Encountered '.get_class($e).': '.$e->getMessage().' in '.basename($e->getFile()).' L'.$e->getLine(),
                     'error'
                 );
-            } catch (\Throwable $loggingError) {
+            } catch (Throwable $loggingError) {
                 // Prevent infinite loop if logging itself fails
             }
         });

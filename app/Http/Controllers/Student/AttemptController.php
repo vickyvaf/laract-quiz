@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Answer;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
-use App\Models\Answer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -36,7 +36,7 @@ class AttemptController extends Controller
         return Inertia::render('student/attempts/show', [
             'attempt' => $attempt,
             'quiz' => $attempt->quiz,
-            'questions' => $attempt->quiz->questions->map(fn($q) => [
+            'questions' => $attempt->quiz->questions->map(fn ($q) => [
                 'id' => $q->id,
                 'question_text' => $q->question_text,
                 'type' => $q->type,
@@ -69,7 +69,7 @@ class AttemptController extends Controller
 
         foreach ($validated['answers'] as $ansData) {
             $question = $questions->get($ansData['question_id']);
-            if (!$question) {
+            if (! $question) {
                 continue;
             }
 
@@ -79,7 +79,7 @@ class AttemptController extends Controller
             if ($question->type === 'multiple_choice') {
                 $isCorrect = trim(strtolower($answerText)) === trim(strtolower($question->correct_answer));
             } else {
-                $isCorrect = !empty(trim($answerText));
+                $isCorrect = ! empty(trim($answerText));
             }
 
             if ($isCorrect) {
@@ -117,7 +117,7 @@ class AttemptController extends Controller
         return Inertia::render('student/attempts/result', [
             'attempt' => $attempt,
             'quiz' => $attempt->quiz,
-            'answers' => $attempt->answers->map(fn($a) => [
+            'answers' => $attempt->answers->map(fn ($a) => [
                 'id' => $a->id,
                 'question_text' => $a->question->question_text,
                 'type' => $a->question->type,

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Quiz;
 use App\Models\Question;
+use App\Models\Quiz;
 use App\Models\QuizAttempt;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -65,7 +65,7 @@ class QuizTest extends TestCase
     public function test_student_can_take_quiz_and_get_correct_score(): void
     {
         $student = User::factory()->create(['role' => 'student']);
-        
+
         $quiz = Quiz::create([
             'title' => 'PHP Basics',
             'time_limit' => 15,
@@ -106,11 +106,11 @@ class QuizTest extends TestCase
                         'question_id' => $q2->id,
                         'answer_text' => 'It means Object Oriented Programming.',
                     ],
-                ]
+                ],
             ]);
 
         $response->assertRedirect(route('student.attempts.result', $attempt->id));
-        
+
         // Verify score is 100% since both answers are correct
         $this->assertEquals(100.0, floatval($attempt->fresh()->score));
     }
