@@ -58,8 +58,7 @@ RUN npm ci --ignore-scripts \
 RUN rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php bootstrap/cache/routes.php \
     && composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
     && php artisan package:discover --ansi \
-    && rm -rf node_modules \
-    && rm -f .env
+    && rm -rf node_modules
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
