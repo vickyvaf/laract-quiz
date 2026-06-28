@@ -56,6 +56,7 @@ RUN npm ci --ignore-scripts \
 
 # Clean up dev PHP dependencies and node_modules for production
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
+    && php artisan package:discover --ansi \
     && rm -rf node_modules \
     && rm -f .env
 
