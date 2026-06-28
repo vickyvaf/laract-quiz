@@ -24,6 +24,6 @@ class DashboardTest extends TestCase
             ->actingAs($user)
             ->get(route('dashboard'));
 
-        $response->assertRedirect(route('student.quizzes.index'));
+        $response->assertOk();
     }
 }

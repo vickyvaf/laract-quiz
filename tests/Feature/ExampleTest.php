@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,12 +19,12 @@ class ExampleTest extends TestCase
 
     public function test_authenticated_users_are_redirected_to_dashboard_from_home()
     {
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
 
         $response = $this
             ->actingAs($user)
             ->get(route('home'));
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('student.quizzes.index'));
     }
 }
