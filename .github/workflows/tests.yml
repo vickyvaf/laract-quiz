@@ -58,7 +58,7 @@ jobs:
         run: npm run build
 
       - name: Run Type Analysis
-        run: composer types:check
+        run: vendor/bin/phpstan analyse --memory-limit=512M
 
       - name: Tests
         run: php artisan test
