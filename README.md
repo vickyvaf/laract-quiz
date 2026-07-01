@@ -23,6 +23,75 @@ https://github.com/user-attachments/assets/e3cf10a5-d2b5-4900-a450-864c52fe1530
 
 ---
 
+## Project Architecture & Directory Structure
+
+This project uses a modern **Monolith** architecture powered by **Inertia.js v3**, bridging **Laravel 13** on the backend and **React 19** on the frontend.
+
+### Architecture Flow
+
+```mermaid
+graph TD
+    subgraph Frontend ["React 19 Frontend"]
+        P["React Pages & Components"]
+        W["Wayfinder Route Actions"]
+    end
+
+    subgraph Bridge ["Inertia.js v3"]
+        I["Inertia Protocol (XHR/JSON)"]
+    end
+
+    subgraph Backend ["Laravel 13 Backend"]
+        R["Web Routes (routes/web.php)"]
+        M["Middlewares (Admin/Student Guards)"]
+        C["Controllers (Quiz, Question, Attempt)"]
+        E["Eloquent Models (Model Events / Observers)"]
+        L["ActivityLogger Service"]
+        D[("Database (MySQL/SQLite)")]
+    end
+
+    %% Communication Flow
+    P -->|"Interactive Actions"| W
+    W -->|"HTTP Request"| I
+    I -->|"Resolve Route"| R
+    R --> M
+    M --> C
+    C -->|"Query/Modify Model"| E
+    E -->|"Model Boot Hook"| L
+    L -->|"Log Activity"| D
+    E -->|"CRUD Operations"| D
+    C -->|"Inertia::render()"| I
+    I -->|"Hydrated Props"| P
+```
+
+### Directory Structure
+
+Below is an overview of the key folders and files that structure this application:
+
+```text
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/       # Controllers handling Quiz, Question, Attempt & Log requests
+│   │   └── Middleware/        # Route access control (EnsureIsAdmin, EnsureIsStudent)
+│   ├── Models/                # Eloquent models (defines boot hooks for automatic logging)
+│   └── Services/              # Core Services (e.g., ActivityLogger)
+├── bootstrap/                 # Application bootstrap & route configuration
+├── config/                    # Framework configuration files
+├── database/
+│   ├── migrations/            # DB Migrations (users, quizzes, questions, quiz_attempts, activity_logs)
+│   └── seeders/               # Seeders for default admin, student, and demo quizzes
+├── resources/
+│   └── js/
+│       ├── components/        # Shared React UI components (dialogs, custom buttons, etc.)
+│       ├── layouts/           # Page wrapper layouts
+│       └── pages/             # React views (Quizzes, Questions, Attempts, ActivityLogs)
+├── routes/
+│   ├── settings.php           # User profile & credentials settings routes
+│   └── web.php                # Core application routes
+└── vite.config.ts             # Vite configurations + Wayfinder plugin
+```
+
+---
+
 ## System Requirements
 
 - PHP >= 8.3
